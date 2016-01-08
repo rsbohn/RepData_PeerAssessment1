@@ -4,6 +4,8 @@
 
 # build the project using knit2html
 setwd("/users/rsboh/coursera/peer1")
+install.packages("ggplot2")
+install.packages("Hmisc")
 library(knitr)
 knit2html("PA1_template.Rmd")
 
