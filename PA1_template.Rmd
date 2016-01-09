@@ -10,7 +10,7 @@ output:
 
 
 ## Loading and preprocessing the data
-```{r}
+```{r warning=FALSE}
 if (!file.exists("activity.csv")) {
   unzip("./activity.zip")
 }
@@ -18,8 +18,8 @@ activity <- read.csv("activity.csv")
 activity$date <- as.Date(activity$date)
 
 #load libraries here
-library(Hmisc)
 library(ggplot2)
+library(Hmisc)
 
 theme_set(theme_bw() + theme(panel.background=element_rect(fill ="#ffffdd")))
 
@@ -89,8 +89,11 @@ data.frame(observations=length(activity$steps),
 
 # Make a copy of the activity data frame
 activity2 <- activity
-# Impute using the mean of all steps
-activity2$isteps <- impute(activity$steps, mean)
+# Impute steps using random values based on the mean
+guess <- rnorm(sum(is.na(activity$steps)),
+               mean(activity$steps, na.rm = T),
+               5)
+activity2$isteps <- impute(activity$steps, guess)
 
 imputed <- aggregate(isteps ~ date, activity2, sum)
 ggplot(imputed, aes(x=isteps)) +
@@ -111,8 +114,7 @@ rbind(s, s2)
 activity2$guess <- is.imputed(activity2$isteps)
 ggplot(activity2, aes(x=interval, y=isteps)) +
   geom_point(aes(color=guess, group=guess))
-#with(activity2,
-#     points(steps ~ interval, col=rgb(0.9,0,0,0.2)))
+
 ```
 
 [http://stackoverflow.com/questions/13114812/imputation-in-r]
@@ -121,7 +123,31 @@ ggplot(activity2, aes(x=interval, y=isteps)) +
 
 
 ## Are there differences in activity patterns between weekdays and weekends?
+```{r label="peer1d"}
+# Add a new variable based on the date
+# weekday or weekend?
+activity$wkday <- sapply(activity$date, function(d) 
+                           if (weekdays(d) %in% c("Saturday", "Sunday"))
+                             "weekend"  else "weekday")
+
+# get the mean steps taken per interval for each wkday category
+weekday <- aggregate(steps ~ interval, activity[activity$wkday=="weekday",], mean)
+weekend <- aggregate(steps ~ interval, activity[activity$wkday=="weekend",], mean)
+
+# build a long form dataset for plotting
+weekday$dy <- "weekday"
+weekend$dy <- "weekend"
+lform <- rbind(weekday, weekend)
+
+ggplot(lform, aes(x=interval, y=steps)) +
+  geom_line(color="slategray") +
+  facet_grid(dy ~ .) +
+  ylab("mean steps taken") +
+  ggtitle("Daily Activity: weekday vs weekend")
+```
 
 ## Additional Resources
+
+[http://www.cookbook-r.com/Graphs/Colors_(ggplot2)/]
 
 [http://www.cookbook-r.com/Graphs/Legends_(ggplot2)/]

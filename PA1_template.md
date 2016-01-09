@@ -12,32 +12,14 @@ activity <- read.csv("activity.csv")
 activity$date <- as.Date(activity$date)
 
 #load libraries here
+library(ggplot2)
 library(Hmisc)
-```
-
-```
-## Warning: package 'Hmisc' was built under R version 3.2.3
 ```
 
 ```
 ## Loading required package: lattice
 ## Loading required package: survival
 ## Loading required package: Formula
-```
-
-```
-## Warning: package 'Formula' was built under R version 3.2.3
-```
-
-```
-## Loading required package: ggplot2
-```
-
-```
-## Warning: package 'ggplot2' was built under R version 3.2.3
-```
-
-```
 ## 
 ## Attaching package: 'Hmisc'
 ## 
@@ -47,8 +29,6 @@ library(Hmisc)
 ```
 
 ```r
-library(ggplot2)
-
 theme_set(theme_bw() + theme(panel.background=element_rect(fill ="#ffffdd")))
 
 #set the random seed
@@ -144,8 +124,11 @@ data.frame(observations=length(activity$steps),
 ```r
 # Make a copy of the activity data frame
 activity2 <- activity
-# Impute using the mean of all steps
-activity2$isteps <- impute(activity$steps, mean)
+# Impute steps using random values based on the mean
+guess <- rnorm(sum(is.na(activity$steps)),
+               mean(activity$steps, na.rm = T),
+               5)
+activity2$isteps <- impute(activity$steps, guess)
 
 imputed <- aggregate(isteps ~ date, activity2, sum)
 ggplot(imputed, aes(x=isteps)) +
@@ -171,7 +154,7 @@ rbind(s, s2)
 ```
 ##                             mean   median
 ## steps per day           10766.19 10765.00
-## steps per day (imputed) 10766.19 10766.19
+## steps per day (imputed) 10765.89 10785.71
 ```
 
 ```r
@@ -186,11 +169,6 @@ ggplot(activity2, aes(x=interval, y=isteps)) +
 
 ![](PA1_template_files/figure-html/peer1c-2.png) 
 
-```r
-#with(activity2,
-#     points(steps ~ interval, col=rgb(0.9,0,0,0.2)))
-```
-
 [http://stackoverflow.com/questions/13114812/imputation-in-r]
 
 [https://cran.r-project.org/web/packages/Hmisc/Hmisc.pdf]
@@ -198,6 +176,33 @@ ggplot(activity2, aes(x=interval, y=isteps)) +
 
 ## Are there differences in activity patterns between weekdays and weekends?
 
+```r
+# Add a new variable based on the date
+# weekday or weekend?
+activity$wkday <- sapply(activity$date, function(d) 
+                           if (weekdays(d) %in% c("Saturday", "Sunday"))
+                             "weekend"  else "weekday")
+
+# get the mean steps taken per interval for each wkday category
+weekday <- aggregate(steps ~ interval, activity[activity$wkday=="weekday",], mean)
+weekend <- aggregate(steps ~ interval, activity[activity$wkday=="weekend",], mean)
+
+# build a long form dataset for plotting
+weekday$dy <- "weekday"
+weekend$dy <- "weekend"
+lform <- rbind(weekday, weekend)
+
+ggplot(lform, aes(x=interval, y=steps)) +
+  geom_line(color="slategray") +
+  facet_grid(dy ~ .) +
+  ylab("mean steps taken") +
+  ggtitle("Daily Activity: weekday vs weekend")
+```
+
+![](PA1_template_files/figure-html/peer1d-1.png) 
+
 ## Additional Resources
+
+[http://www.cookbook-r.com/Graphs/Colors_(ggplot2)/]
 
 [http://www.cookbook-r.com/Graphs/Legends_(ggplot2)/]
