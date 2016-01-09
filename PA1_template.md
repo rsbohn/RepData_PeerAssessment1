@@ -35,6 +35,13 @@ theme_set(theme_bw() + theme(panel.background=element_rect(fill ="#ffffdd")))
 set.seed(220847)
 ```
 
+The data for this assignment is a count of steps, 
+taken over a sixty day period
+for an anonymous individual. 
+The step counts were taken using a personal activity monitor device.
+This device collects data at 5 minute intervals 
+through out the day. 
+
 ## What is mean total number of steps taken per day?
 
 ```r
@@ -158,16 +165,17 @@ rbind(s, s2)
 ```
 
 ```r
-activity2$guess <- is.imputed(activity2$isteps)
-ggplot(activity2, aes(x=interval, y=isteps)) +
-  geom_point(aes(color=guess, group=guess))
+#activity2$guess <- is.imputed(activity2$isteps)
+#ggplot(activity2, aes(x=interval, y=isteps)) +
+#  geom_point(aes(color=guess, group=guess))
 ```
 
-```
-## Don't know how to automatically pick scale for object of type impute. Defaulting to continuous
-```
-
-![](PA1_template_files/figure-html/peer1c-2.png) 
+I considered using the daily mean to replace NA values 
+but I found that instead of brief gaps in the data
+there were whole days missing. 
+Instead I chose to replace the missing values 
+with random normal values centered on the overall mean.
+The imputed values decreased the mean slightly and increased the median.
 
 [http://stackoverflow.com/questions/13114812/imputation-in-r]
 
