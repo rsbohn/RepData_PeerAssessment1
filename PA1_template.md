@@ -35,6 +35,19 @@ The step counts were taken using a personal activity monitor device.
 This device collects data at 5 minute intervals 
 through out the day. 
 
+* Dataset: [Activity monitoring data](https://d396qusza40orc.cloudfront.net/repdata%2Fdata%2Factivity.zip) [52K]
+
+The variables included in this dataset are:
+
+* **steps**: Number of steps taking in a 5-minute interval (missing
+    values are coded as `NA`)
+
+* **date**: The date on which the measurement was taken in YYYY-MM-DD
+    format
+
+* **interval**: Identifier for the 5-minute interval in which
+    measurement was taken
+
 ## What is mean total number of steps taken per day?
 
 ```r
