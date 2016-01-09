@@ -1,5 +1,12 @@
-# Reproducible Research: Peer Assessment 1
-Randall Bohn  
+---
+title: "Reproducible Research: Peer Assessment 1"
+author: "Randall Bohn"
+output: 
+  html_document:
+    theme: journal
+    highlight: kate
+    keep_md: true
+---
 
 
 ## Loading and preprocessing the data
@@ -14,21 +21,7 @@ activity$date <- as.Date(activity$date)
 #load libraries here
 library(ggplot2)
 library(Hmisc)
-```
 
-```
-## Loading required package: lattice
-## Loading required package: survival
-## Loading required package: Formula
-## 
-## Attaching package: 'Hmisc'
-## 
-## The following objects are masked from 'package:base':
-## 
-##     format.pval, round.POSIXt, trunc.POSIXt, units
-```
-
-```r
 theme_set(theme_bw() + theme(panel.background=element_rect(fill ="#ffffdd")))
 
 #set the random seed
@@ -56,7 +49,7 @@ ggplot(steps_per_day, aes(x=steps)) +
   ggtitle("Distribution of Steps per Day")
 ```
 
-![](PA1_template_files/figure-html/peer1a-1.png) 
+![plot of chunk peer1a](figure/peer1a-1.png) 
 
 What makes this a histogram and not a bar chart?
 A histogram shows the distribution of a variable. 
@@ -97,7 +90,7 @@ ggplot(by_interval, aes(x=interval, y=steps)) +
   ggtitle("Average Daily Activity")
 ```
 
-![](PA1_template_files/figure-html/peer1b-1.png) 
+![plot of chunk peer1b](figure/peer1b-1.png) 
 
 ```r
 # Which 5-minute interval, 
@@ -145,7 +138,7 @@ ggplot(imputed, aes(x=isteps)) +
   ggtitle("Distribution of Steps per Day")
 ```
 
-![](PA1_template_files/figure-html/peer1c-1.png) 
+![plot of chunk peer1c](figure/peer1c-1.png) 
 
 ```r
 # Calculate and report the **mean** and **median** total number of steps taken per day.
@@ -207,7 +200,7 @@ ggplot(lform, aes(x=interval, y=steps)) +
   ggtitle("Daily Activity: weekday vs weekend")
 ```
 
-![](PA1_template_files/figure-html/peer1d-1.png) 
+![plot of chunk peer1d](figure/peer1d-1.png) 
 
 ## Additional Resources
 
