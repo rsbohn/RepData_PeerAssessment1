@@ -90,19 +90,38 @@ data.frame(observations=length(activity$steps),
 # Make a copy of the activity data frame
 activity2 <- activity
 # Impute using the mean of all steps
-activity2$mean_steps <- impute(activity$steps, mean)
-# Impute using "random"
-activity2$random_steps <- impute(activity$steps, "random")
-imputed <- aggregate(cbind(mean_steps, random_steps) ~ interval, activity2, mean)
-splom(imputed[2:3], xlab="Imputed Steps")
-#par(mfrow=c(1,2))
-#with(imputed, plot(mean_steps ~ interval), plot(random_steps ~ interval))
+activity2$isteps <- impute(activity$steps, mean)
+
+imputed <- aggregate(isteps ~ date, activity2, sum)
+ggplot(imputed, aes(x=isteps)) +
+  geom_histogram(fill="slategray", binwidth=2000) +
+  xlab("Number of Steps Taken") +
+  ylab("days") +
+  ggtitle("Distribution of Steps per Day")
+
+# Calculate and report the **mean** and **median** total number of steps taken per day.
+# Do these values differ from the estimates from the first part of the assignment? 
+# What is the impact of imputing missing data on the estimates of the total daily number of steps?
+s2 <-data.frame(
+  mean = mean(imputed$isteps), 
+  median = quantile(imputed$isteps, probs = 0.5))
+row.names(s2) <- "steps per day (imputed)"
+rbind(s, s2)
+
+activity2$guess <- is.imputed(activity2$isteps)
+ggplot(activity2, aes(x=interval, y=isteps)) +
+  geom_point(aes(color=guess, group=guess))
+#with(activity2,
+#     points(steps ~ interval, col=rgb(0.9,0,0,0.2)))
 ```
 
 [http://stackoverflow.com/questions/13114812/imputation-in-r]
 
 [https://cran.r-project.org/web/packages/Hmisc/Hmisc.pdf]
 
-[http://www.cookbook-r.com/Graphs/Legends_(ggplot2)/]
 
 ## Are there differences in activity patterns between weekdays and weekends?
+
+## Additional Resources
+
+[http://www.cookbook-r.com/Graphs/Legends_(ggplot2)/]

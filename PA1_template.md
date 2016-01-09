@@ -1,12 +1,5 @@
----
-title: "Reproducible Research: Peer Assessment 1"
-author: "Randall Bohn"
-output: 
-  html_document:
-    theme: journal
-    highlight: kate
-    keep_md: true
----
+# Reproducible Research: Peer Assessment 1
+Randall Bohn  
 
 
 ## Loading and preprocessing the data
@@ -20,6 +13,40 @@ activity$date <- as.Date(activity$date)
 
 #load libraries here
 library(Hmisc)
+```
+
+```
+## Warning: package 'Hmisc' was built under R version 3.2.3
+```
+
+```
+## Loading required package: lattice
+## Loading required package: survival
+## Loading required package: Formula
+```
+
+```
+## Warning: package 'Formula' was built under R version 3.2.3
+```
+
+```
+## Loading required package: ggplot2
+```
+
+```
+## Warning: package 'ggplot2' was built under R version 3.2.3
+```
+
+```
+## 
+## Attaching package: 'Hmisc'
+## 
+## The following objects are masked from 'package:base':
+## 
+##     format.pval, round.POSIXt, trunc.POSIXt, units
+```
+
+```r
 library(ggplot2)
 
 theme_set(theme_bw() + theme(panel.background=element_rect(fill ="#ffffdd")))
@@ -42,7 +69,7 @@ ggplot(steps_per_day, aes(x=steps)) +
   ggtitle("Distribution of Steps per Day")
 ```
 
-![plot of chunk peer1a](figure/peer1a-1.png) 
+![](PA1_template_files/figure-html/peer1a-1.png) 
 
 What makes this a histogram and not a bar chart?
 A histogram shows the distribution of a variable. 
@@ -83,7 +110,7 @@ ggplot(by_interval, aes(x=interval, y=steps)) +
   ggtitle("Average Daily Activity")
 ```
 
-![plot of chunk peer1b](figure/peer1b-1.png) 
+![](PA1_template_files/figure-html/peer1b-1.png) 
 
 ```r
 # Which 5-minute interval, 
@@ -118,24 +145,59 @@ data.frame(observations=length(activity$steps),
 # Make a copy of the activity data frame
 activity2 <- activity
 # Impute using the mean of all steps
-activity2$mean_steps <- impute(activity$steps, mean)
-# Impute using "random"
-activity2$random_steps <- impute(activity$steps, "random")
-imputed <- aggregate(cbind(mean_steps, random_steps) ~ interval, activity2, mean)
-splom(imputed[2:3], xlab="Imputed Steps")
+activity2$isteps <- impute(activity$steps, mean)
+
+imputed <- aggregate(isteps ~ date, activity2, sum)
+ggplot(imputed, aes(x=isteps)) +
+  geom_histogram(fill="slategray", binwidth=2000) +
+  xlab("Number of Steps Taken") +
+  ylab("days") +
+  ggtitle("Distribution of Steps per Day")
 ```
 
-![plot of chunk peer1c](figure/peer1c-1.png) 
+![](PA1_template_files/figure-html/peer1c-1.png) 
 
 ```r
-#par(mfrow=c(1,2))
-#with(imputed, plot(mean_steps ~ interval), plot(random_steps ~ interval))
+# Calculate and report the **mean** and **median** total number of steps taken per day.
+# Do these values differ from the estimates from the first part of the assignment? 
+# What is the impact of imputing missing data on the estimates of the total daily number of steps?
+s2 <-data.frame(
+  mean = mean(imputed$isteps), 
+  median = quantile(imputed$isteps, probs = 0.5))
+row.names(s2) <- "steps per day (imputed)"
+rbind(s, s2)
+```
+
+```
+##                             mean   median
+## steps per day           10766.19 10765.00
+## steps per day (imputed) 10766.19 10766.19
+```
+
+```r
+activity2$guess <- is.imputed(activity2$isteps)
+ggplot(activity2, aes(x=interval, y=isteps)) +
+  geom_point(aes(color=guess, group=guess))
+```
+
+```
+## Don't know how to automatically pick scale for object of type impute. Defaulting to continuous
+```
+
+![](PA1_template_files/figure-html/peer1c-2.png) 
+
+```r
+#with(activity2,
+#     points(steps ~ interval, col=rgb(0.9,0,0,0.2)))
 ```
 
 [http://stackoverflow.com/questions/13114812/imputation-in-r]
 
 [https://cran.r-project.org/web/packages/Hmisc/Hmisc.pdf]
 
-[http://www.cookbook-r.com/Graphs/Legends_(ggplot2)/]
 
 ## Are there differences in activity patterns between weekdays and weekends?
+
+## Additional Resources
+
+[http://www.cookbook-r.com/Graphs/Legends_(ggplot2)/]
